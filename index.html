@@ -745,6 +745,117 @@
       font-size: 0.8rem;
     }
 
+    /* ── BEFORE / AFTER ── */
+    .ba-section { background: var(--navy); }
+
+    .ba-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .ba-text .section-label { display: block; color: var(--gold); }
+    .ba-text .section-title { color: var(--white); }
+    .ba-text p {
+      color: rgba(255,255,255,0.7);
+      font-size: 0.95rem;
+      line-height: 1.75;
+      margin: 14px 0 24px;
+    }
+
+    .ba-hint {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255,255,255,0.5);
+      font-size: 0.82rem;
+    }
+
+    .ba-hint svg { width: 18px; height: 18px; fill: var(--gold); flex-shrink: 0; }
+
+    .ba-slider-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 16px;
+      overflow: hidden;
+      cursor: col-resize;
+      user-select: none;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    .ba-after, .ba-before {
+      position: absolute;
+      inset: 0;
+    }
+
+    .ba-after img, .ba-before img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
+
+    .ba-before {
+      clip-path: inset(0 50% 0 0);
+    }
+
+    .ba-divider {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 3px;
+      background: var(--white);
+      transform: translateX(-50%);
+      z-index: 3;
+    }
+
+    .ba-handle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--white);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 4;
+      transition: transform 0.1s;
+    }
+
+    .ba-handle svg { width: 22px; height: 22px; fill: var(--navy); }
+
+    .ba-label {
+      position: absolute;
+      top: 14px;
+      z-index: 5;
+      background: rgba(0,0,0,0.55);
+      color: var(--white);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+
+    .ba-label-before { left: 14px; }
+    .ba-label-after  { right: 14px; }
+
+    @media (max-width: 900px) {
+      .ba-inner { grid-template-columns: 1fr; }
+    }
+
     /* ── LIGHTBOX ── */
     .lightbox {
       display: none;
@@ -1024,6 +1135,39 @@
     </div>
   </div>
 </div>
+
+<!-- BEFORE / AFTER -->
+<section class="ba-section">
+  <div class="ba-inner">
+    <div class="ba-text">
+      <span class="section-label">See It In Action</span>
+      <h2 class="section-title">From Raw Fabric<br>to Finished Sofa</h2>
+      <p>Our premium velvet transforms any furniture into a statement piece. Drag the slider to see the difference our fabric makes — from roll to reality.</p>
+      <div class="ba-hint">
+        <svg viewBox="0 0 24 24"><path d="M15 5l-1.41 1.41L18.17 11H2v2h16.17l-4.59 4.59L15 19l7-7-7-7zm-12 1h2v12H3V6z"/></svg>
+        Drag the slider left or right to compare
+      </div>
+    </div>
+    <div class="ba-slider-wrap" id="ba-wrap">
+      <!-- After (sofa) — base layer -->
+      <div class="ba-after">
+        <img src="sofa-sample.png" alt="Finished sofa with fabric applied" />
+      </div>
+      <!-- Before (raw fabric) — clipped layer -->
+      <div class="ba-before" id="ba-before">
+        <img src="velvet-before.jpg" alt="Raw velvet fabric" />
+      </div>
+      <!-- Divider + handle -->
+      <div class="ba-divider" id="ba-divider">
+        <div class="ba-handle">
+          <svg viewBox="0 0 24 24"><path d="M8 5l-1.41 1.41L10.17 10H2v2h8.17l-3.59 3.59L8 17l6-6-6-6zm8 11l1.41-1.41L13.83 12H22v-2h-8.17l3.59-3.59L16 5l-6 6 6 6z"/></svg>
+        </div>
+      </div>
+      <span class="ba-label ba-label-before">Before</span>
+      <span class="ba-label ba-label-after">After</span>
+    </div>
+  </div>
+</section>
 
 <!-- PRODUCTS -->
 <section class="products" id="products">
@@ -1488,6 +1632,33 @@
   });
 
   buildGrid('all');
+
+  // ── Before / After slider ──
+  (function() {
+    const wrap = document.getElementById('ba-wrap');
+    const before = document.getElementById('ba-before');
+    const divider = document.getElementById('ba-divider');
+    if (!wrap) return;
+
+    let dragging = false;
+
+    function setPos(clientX) {
+      const rect = wrap.getBoundingClientRect();
+      let pct = (clientX - rect.left) / rect.width;
+      pct = Math.max(0.02, Math.min(0.98, pct));
+      const pctStr = (pct * 100).toFixed(2) + '%';
+      divider.style.left = pctStr;
+      before.style.clipPath = `inset(0 ${(100 - pct * 100).toFixed(2)}% 0 0)`;
+    }
+
+    wrap.addEventListener('mousedown', e => { dragging = true; setPos(e.clientX); e.preventDefault(); });
+    document.addEventListener('mousemove', e => { if (dragging) setPos(e.clientX); });
+    document.addEventListener('mouseup', () => { dragging = false; });
+
+    wrap.addEventListener('touchstart', e => { dragging = true; setPos(e.touches[0].clientX); }, { passive: true });
+    document.addEventListener('touchmove', e => { if (dragging) setPos(e.touches[0].clientX); }, { passive: true });
+    document.addEventListener('touchend', () => { dragging = false; });
+  })();
 </script>
 </body>
 </html>
