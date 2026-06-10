@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fabric Photoshoot — redlipscreative</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #111;
+      color: #fff;
+    }
+
+    /* ── HEADER ── */
+    header {
+      padding: 48px 40px 40px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    header p {
+      margin-top: 6px;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.38);
+      letter-spacing: 0.06em;
+    }
+
+    .gold-line {
+      width: 36px;
+      height: 2px;
+      background: #c8a96e;
+      margin: 14px auto 0;
+      border-radius: 2px;
+    }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      text-align: center;
+      padding: 0 40px 28px;
+    }
+
+    .section-label h2 {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #c8a96e;
+      margin-bottom: 6px;
+    }
+
+    .section-label p {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.35);
+    }
+
+    /* ── PRODUCT GRID ── */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 0 32px 60px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 1000px) { .product-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 540px)  { .product-grid { grid-template-columns: 1fr; padding: 0 16px 48px; } }
+
+    /* ── CAROUSEL CARD ── */
+    .card {
+      border-radius: 6px;
+      overflow: hidden;
+      background: #1a1a1a;
+      position: relative;
+    }
+
+    .carousel {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      cursor: zoom-in;
+    }
+
+    .carousel-track {
+      display: flex;
+      height: 100%;
+      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .carousel-track img {
+      flex: 0 0 100%;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    /* arrows */
+    .car-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 3;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      color: #fff;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .carousel:hover .car-btn { opacity: 1; }
+    .car-prev { left: 7px; }
+    .car-next { right: 7px; }
+
+    /* dots */
+    .car-dots {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 5px;
+      z-index: 3;
+    }
+
+    .car-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.4);
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.18s, transform 0.18s;
+    }
+
+    .car-dot.active {
+      background: #fff;
+      transform: scale(1.4);
+    }
+
+    /* card label */
+    .card-label {
+      padding: 10px 14px;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.04em;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    /* ── ANGLE BANNER ── */
+    .angle-section {
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding-top: 52px;
+      padding-bottom: 60px;
+    }
+
+    .angle-strip {
+      display: flex;
+      gap: 10px;
+      padding: 0 32px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .angle-strip::-webkit-scrollbar { display: none; }
+
+    .angle-item {
+      flex: 0 0 260px;
+      scroll-snap-align: start;
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+      cursor: zoom-in;
+    }
+
+    .angle-item img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+
+    .angle-item:hover img { transform: scale(1.05); }
+
+    .angle-num {
+      position: absolute;
+      top: 8px;
+      left: 10px;
+      background: rgba(0,0,0,0.6);
+      color: #c8a96e;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 3px 8px;
+      border-radius: 3px;
+    }
+
+    .scroll-hint {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── LIGHTBOX ── */
+    .lb {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: rgba(0,0,0,0.96);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lb.open { display: flex; }
+
+    .lb-backdrop { position: absolute; inset: 0; }
+
+    .lb-wrap {
+      position: relative;
+      z-index: 1;
+      width: 94vw;
+      height: 92vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      cursor: zoom-in;
+    }
+
+    .lb-wrap.zoomed   { cursor: grab; }
+    .lb-wrap.dragging { cursor: grabbing; }
+
+    #lb-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      transform-origin: 0 0;
+      transition: transform 0.15s ease;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .lb-close {
+      position: absolute; top: 14px; right: 14px; z-index: 10;
+      background: rgba(255,255,255,0.1); border: none; color: #fff;
+      font-size: 1.1rem; width: 34px; height: 34px; border-radius: 50%;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .lb-close:hover { background: rgba(255,255,255,0.25); }
+
+    .lb-arrow {
+      position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;
+      background: rgba(255,255,255,0.1); border: none; color: #fff;
+      font-size: 2rem; width: 46px; height: 46px; border-radius: 50%;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .lb-arrow:hover   { background: rgba(255,255,255,0.22); }
+    .lb-arrow:disabled { opacity: 0.12; cursor: default; }
+    .lb-arrow.prev { left: 12px; }
+    .lb-arrow.next { right: 12px; }
+
+    .lb-counter {
+      position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+      z-index: 10; color: rgba(255,255,255,0.4); font-size: 0.76rem; letter-spacing: 0.06em;
+    }
+
+    .lb-zoom {
+      position: absolute; bottom: 14px; right: 14px; z-index: 10; display: flex; gap: 5px;
+    }
+
+    .lb-zoom button {
+      background: rgba(255,255,255,0.1); border: none; color: #fff;
+      width: 28px; height: 28px; border-radius: 50%; font-size: 0.95rem;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .lb-zoom button:hover { background: rgba(255,255,255,0.25); }
+
+    .lb-hint {
+      position: absolute; bottom: 14px; left: 14px; z-index: 10;
+      color: rgba(255,255,255,0.2); font-size: 0.68rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <h1>redlipscreative</h1>
+  <p>Fabric Photoshoot Portfolio</p>
+  <div class="gold-line"></div>
+</header>
+
+<!-- PRODUCT CAROUSEL SECTION -->
+<div class="section-label">
+  <h2>Product Shots</h2>
+  <p>Click arrows to preview both images · Click photo to enlarge</p>
+</div>
+
+<div class="product-grid" id="product-grid"></div>
+
+<!-- ANGLE BANNER -->
+<div class="angle-section">
+  <div class="section-label">
+    <h2>11 Different Angles We Can Shoot</h2>
+    <p>Scroll to explore · Every angle tells a different story</p>
+  </div>
+
+  <div class="angle-strip" id="angle-strip"></div>
+  <div class="scroll-hint">← scroll →</div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lb" id="lb">
+  <div class="lb-backdrop" onclick="lbClose()"></div>
+  <button class="lb-close" onclick="lbClose()">&#x2715;</button>
+  <button class="lb-arrow prev" id="lb-prev" onclick="lbNav(-1)">&#8249;</button>
+  <button class="lb-arrow next" id="lb-next" onclick="lbNav(1)">&#8250;</button>
+  <div class="lb-wrap" id="lb-wrap">
+    <img id="lb-img" src="" alt="" draggable="false" />
+  </div>
+  <div class="lb-counter" id="lb-counter"></div>
+  <div class="lb-hint">Scroll · Double-click · Drag</div>
+  <div class="lb-zoom">
+    <button onclick="lbZoom(-1)">&#x2212;</button>
+    <button onclick="lbZoom(1)">&#x2B;</button>
+  </div>
+</div>
+
+<script>
+  // ── Data ──
+  const products = [
+    { label: 'Collection 02', images: ['2/TJJ_6579.jpg',       '2/TJJ_6580.jpg']   },
+    { label: 'Collection 03', images: ['3/TJJ_6588.jpg',       '3/TJJ_6589.jpg']   },
+    { label: 'Collection 04', images: ['4/TJJ_6590.jpg',       '4/TJJ_6591.jpg']   },
+    { label: 'Collection 05', images: ['5/TJJ_6575.jpg',       '5/TJJ_6576.jpg']   },
+    { label: 'Collection 06', images: ['6/TJJ_6582.jpg',       '6/TJJ_6584.jpg']   },
+    { label: 'Collection 07', images: ['7/TJJ_6548-2-2.jpg',   '7/TJJ_6549-2-2.jpg'] },
+  ];
+
+  const angleImages = [
+    'Angle/TJJ_6548-2-2.jpg',
+    'Angle/TJJ_6549-2-2.jpg',
+    'Angle/TJJ_6550-2-2.jpg',
+    'Angle/TJJ_6551-2-2.jpg',
+    'Angle/TJJ_6553-2-2.jpg',
+    'Angle/TJJ_6557-2-2.jpg',
+    'Angle/TJJ_6558-2-2.jpg',
+    'Angle/TJJ_6559-2-2.jpg',
+    'Angle/TJJ_6560-2-2.jpg',
+    'Angle/TJJ_6568-2.jpg',
+    'Angle/TJJ_6569-2.jpg',
+  ];
+
+  const carState = {};
+
+  // ── Build product carousel grid ──
+  const grid = document.getElementById('product-grid');
+
+  products.forEach((p, pi) => {
+    carState[pi] = 0;
+
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    const carousel = document.createElement('div');
+    carousel.className = 'carousel';
+
+    // track
+    const track = document.createElement('div');
+    track.className = 'carousel-track';
+    track.id = 'track-' + pi;
+    p.images.forEach((src, ii) => {
+      const img = document.createElement('img');
+      img.src = src;
+      img.loading = 'lazy';
+      img.alt = p.label + ' — ' + (ii + 1);
+      img.addEventListener('click', () => lbOpenSet(p.images, carState[pi]));
+      track.appendChild(img);
+    });
+    carousel.appendChild(track);
+
+    // arrows
+    const prev = document.createElement('button');
+    prev.className = 'car-btn car-prev';
+    prev.innerHTML = '&#8249;';
+    prev.addEventListener('click', e => { e.stopPropagation(); carSlide(pi, -1); });
+    carousel.appendChild(prev);
+
+    const next = document.createElement('button');
+    next.className = 'car-btn car-next';
+    next.innerHTML = '&#8250;';
+    next.addEventListener('click', e => { e.stopPropagation(); carSlide(pi, 1); });
+    carousel.appendChild(next);
+
+    // dots
+    const dots = document.createElement('div');
+    dots.className = 'car-dots';
+    dots.id = 'dots-' + pi;
+    p.images.forEach((_, ii) => {
+      const dot = document.createElement('button');
+      dot.className = 'car-dot' + (ii === 0 ? ' active' : '');
+      dot.addEventListener('click', e => { e.stopPropagation(); carGo(pi, ii); });
+      dots.appendChild(dot);
+    });
+    carousel.appendChild(dots);
+
+    card.appendChild(carousel);
+
+    const lbl = document.createElement('div');
+    lbl.className = 'card-label';
+    lbl.textContent = p.label;
+    card.appendChild(lbl);
+
+    grid.appendChild(card);
+  });
+
+  function carGo(pi, idx) {
+    const p = products[pi];
+    carState[pi] = (idx + p.images.length) % p.images.length;
+    document.getElementById('track-' + pi).style.transform = `translateX(-${carState[pi] * 100}%)`;
+    document.querySelectorAll('#dots-' + pi + ' .car-dot').forEach((d, i) => d.classList.toggle('active', i === carState[pi]));
+  }
+
+  function carSlide(pi, dir) { carGo(pi, carState[pi] + dir); }
+
+  // ── Build angle strip ──
+  const strip = document.getElementById('angle-strip');
+  let lbAngleImages = [...angleImages];
+
+  angleImages.forEach((src, i) => {
+    const item = document.createElement('div');
+    item.className = 'angle-item';
+    item.innerHTML = `
+      <img src="${src}" loading="lazy" alt="Angle ${i + 1}" />
+      <span class="angle-num">ANGLE ${String(i + 1).padStart(2, '0')}</span>
+    `;
+    item.addEventListener('click', () => lbOpenSet(angleImages, i));
+    strip.appendChild(item);
+  });
+
+  // ── Lightbox ──
+  let lbSet = [], lbIdx = 0;
+  let lbScale = 1, lbX = 0, lbY = 0;
+  let drag = false, dsx, dsy, dox, doy;
+
+  function lbOpenSet(set, idx) {
+    lbSet = set; lbIdx = idx;
+    lbScale = 1; lbX = 0; lbY = 0;
+    document.getElementById('lb').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    lbRender();
+  }
+
+  function lbRender() {
+    document.getElementById('lb-img').src = lbSet[lbIdx];
+    document.getElementById('lb-counter').textContent = (lbIdx + 1) + ' / ' + lbSet.length;
+    document.getElementById('lb-prev').disabled = lbIdx === 0;
+    document.getElementById('lb-next').disabled = lbIdx === lbSet.length - 1;
+    lbApply();
+  }
+
+  function lbApply() {
+    document.getElementById('lb-img').style.transform = `translate(${lbX}px,${lbY}px) scale(${lbScale})`;
+    document.getElementById('lb-wrap').classList.toggle('zoomed', lbScale > 1);
+  }
+
+  function lbNav(d) {
+    const n = lbIdx + d;
+    if (n < 0 || n >= lbSet.length) return;
+    lbIdx = n; lbScale = 1; lbX = 0; lbY = 0; lbRender();
+  }
+
+  function lbZoom(d) {
+    const steps = [1, 1.5, 2, 3, 5];
+    let i = steps.findIndex(s => s >= lbScale - 0.01);
+    i = Math.max(0, Math.min(steps.length - 1, i + d));
+    lbScale = steps[i]; lbApply();
+  }
+
+  function lbClose() {
+    document.getElementById('lb').classList.remove('open');
+    document.body.style.overflow = '';
+    lbScale = 1; lbX = 0; lbY = 0;
+  }
+
+  document.getElementById('lb-wrap').addEventListener('wheel', e => {
+    e.preventDefault();
+    lbScale = Math.max(1, Math.min(6, lbScale * (e.deltaY < 0 ? 1.15 : 1 / 1.15)));
+    lbApply();
+  }, { passive: false });
+
+  document.getElementById('lb-wrap').addEventListener('dblclick', () => {
+    lbScale > 1 ? (lbScale = 1, lbX = 0, lbY = 0) : (lbScale = 2.5);
+    lbApply();
+  });
+
+  document.getElementById('lb-wrap').addEventListener('mousedown', e => {
+    if (lbScale <= 1) return;
+    drag = true; dsx = e.clientX; dsy = e.clientY; dox = lbX; doy = lbY;
+    document.getElementById('lb-wrap').classList.add('dragging');
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (!drag) return;
+    lbX = dox + e.clientX - dsx;
+    lbY = doy + e.clientY - dsy;
+    lbApply();
+  });
+
+  document.addEventListener('mouseup', () => {
+    drag = false;
+    document.getElementById('lb-wrap').classList.remove('dragging');
+  });
+
+  document.addEventListener('keydown', e => {
+    if (!document.getElementById('lb').classList.contains('open')) return;
+    if (e.key === 'Escape')     lbClose();
+    if (e.key === 'ArrowLeft')  lbNav(-1);
+    if (e.key === 'ArrowRight') lbNav(1);
+    if (e.key === '+' || e.key === '=') lbZoom(1);
+    if (e.key === '-')          lbZoom(-1);
+  });
+</script>
+</body>
+</html>
